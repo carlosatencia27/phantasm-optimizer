@@ -1,0 +1,93 @@
+<local:BasePage x:Class="PC_Optimizer.Views.HomeView"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:local="clr-namespace:PC_Optimizer.Views">
+    <StackPanel Margin="0,0,0,24">
+        <Border Style="{StaticResource CardPanel}" Padding="0" Margin="0,0,0,14" ClipToBounds="True">
+            <Grid MinHeight="170">
+                <Grid.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#0F1B2A" Offset="0" />
+                        <GradientStop Color="#0F131B" Offset="0.6" />
+                        <GradientStop Color="#1A1426" Offset="1" />
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <!-- Forma geométrica vectorial a la derecha: anillos y diagonales (sin imágenes) -->
+                <Canvas HorizontalAlignment="Right" Width="340" Height="170" IsHitTestVisible="False" ClipToBounds="True">
+                    <Ellipse Canvas.Left="150" Canvas.Top="-60" Width="260" Height="260" StrokeThickness="1.5" Opacity="0.55" Stroke="{StaticResource BrushAccent}" />
+                    <Ellipse Canvas.Left="190" Canvas.Top="-20" Width="180" Height="180" StrokeThickness="1.5" Opacity="0.45" Stroke="{StaticResource BrushMagenta}" />
+                    <Ellipse Canvas.Left="228" Canvas.Top="18" Width="104" Height="104" StrokeThickness="6" Opacity="0.25" Stroke="{StaticResource BrushAccent}" />
+                    <Path Data="M120,170 L260,0 M160,170 L300,0 M200,170 L340,0" StrokeThickness="1" Opacity="0.35" Stroke="{StaticResource BrushBrandGradient}" />
+                    <Polygon Points="285,50 313,66 313,98 285,114 257,98 257,66" StrokeThickness="2" Opacity="0.8" Stroke="{StaticResource BrushBrandGradient}" Fill="#0A0E14" />
+                </Canvas>
+                <StackPanel Margin="24,20,24,20" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="// " Style="{StaticResource TextEyebrow}" Foreground="{StaticResource BrushAccent}" />
+                        <TextBlock Text="ESTADO ACTUAL DEL EQUIPO" Style="{StaticResource TextEyebrow}" Foreground="{StaticResource BrushAccent}" />
+                    </StackPanel>
+                    <TextBlock Text="Tu equipo, medido en vivo" FontFamily="{StaticResource FontTech}" FontSize="22" Margin="0,6,0,0" />
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <StackPanel Margin="0,0,28,0">
+                            <TextBlock Text="{Binding Panel.CpuText}" Style="{StaticResource TextHero}" />
+                            <TextBlock Text="CPU en uso" Style="{StaticResource TextCaption}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,28,0">
+                            <TextBlock Text="{Binding Panel.RamText}" Style="{StaticResource TextHero}" />
+                            <TextBlock Text="RAM en uso" Style="{StaticResource TextCaption}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,28,0">
+                            <TextBlock Text="{Binding Session.Applied}" Style="{StaticResource TextHero}" />
+                            <TextBlock Text="aplicados de verdad esta sesión" Style="{StaticResource TextCaption}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Session.Reverted}" Style="{StaticResource TextHero}" />
+                            <TextBlock Text="revertidos de verdad esta sesión" Style="{StaticResource TextCaption}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+<ItemsControl ItemsSource="{Binding Steps}" KeyboardNavigation.TabNavigation="Continue">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource CardPanel}" Padding="20" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding Number}" FontSize="28" FontWeight="Bold" FontFamily="{StaticResource FontMono}"
+                                       Foreground="{StaticResource BrushAccent}" Margin="0,0,18,0" VerticalAlignment="Top" />
+                            <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource TextBody}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Text}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                <TextBlock Text="{Binding StatusText}" Margin="0,8,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource TextChip}">
+                                            <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource BrushSuccess}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="{Binding ButtonText}" Command="{Binding GoCommand}"
+                                    Style="{StaticResource ButtonPrimary}" VerticalAlignment="Center"
+                                    Visibility="{Binding IsNext, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <Button Grid.Column="2" Content="{Binding ButtonText}" Command="{Binding GoCommand}"
+                                    Style="{StaticResource ButtonGhost}" VerticalAlignment="Center"
+                                    Visibility="{Binding IsNotNext, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="4,6,0,0"
+                   Foreground="{StaticResource BrushTextSecondary}"
+                   Text="¿Prefieres controlar cada cosa? «Ajustes uno por uno» muestra todos los ajustes con su riesgo. Con el Modo simulación activado nada se cambia de verdad." />
+    </StackPanel>
+</local:BasePage>

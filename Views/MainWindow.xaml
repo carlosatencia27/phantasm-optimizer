@@ -1,0 +1,319 @@
+<Window x:Class="PC_Optimizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vms="clr-namespace:PC_Optimizer.ViewModels"
+        xmlns:views="clr-namespace:PC_Optimizer.Views"
+        mc:Ignorable="d"
+        Title="Phantasm Optimizer"
+        Height="780" Width="1240"
+        MinHeight="440" MinWidth="820"
+        Background="{StaticResource BrushBackground}"
+        Icon="pack://application:,,,/Resources/PC_Optimizer.ico"
+        FontFamily="{StaticResource FontUi}"
+        Foreground="{StaticResource BrushTextPrimary}"
+        KeyboardNavigation.TabNavigation="Continue"
+        d:DataContext="{d:DesignInstance Type=vms:MainViewModel, IsDesignTimeCreatable=False}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource SidebarWidth}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             BARRA LATERAL: marca, secciones agrupadas y pie de control
+             ══════════════════════════════════════════════════════════════════ -->
+        <Border Grid.Column="0" Background="{StaticResource BrushSurface}"
+                BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,1,0">
+            <Grid Margin="{StaticResource PaddingSidebar}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Marca -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Border Width="34" Height="34" CornerRadius="7"
+                            Background="{StaticResource BrushAccentGlow}"
+                            BorderBrush="{StaticResource BrushNavActiveBorder}" BorderThickness="1"
+                            Margin="0,0,10,0">
+<!-- Logo: fantasma de contorno (silueta con borde ondulado y dos ojos), vectorial, sin imágenes -->
+                        <Viewbox Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Canvas Width="24" Height="24">
+                                <Path Data="M5,20.5 V11 A7,7 0 0 1 19,11 V20.5 L16.3,18.2 L14.2,20.5 L12,18.2 L9.8,20.5 L7.7,18.2 Z"
+                                      Stroke="{StaticResource BrushAccent}" StrokeThickness="1.8" StrokeLineJoin="Round" />
+                                <Ellipse Canvas.Left="8.1" Canvas.Top="9.8" Width="2.4" Height="2.4" Fill="{StaticResource BrushAccent}" />
+                                <Ellipse Canvas.Left="13.5" Canvas.Top="9.8" Width="2.4" Height="2.4" Fill="{StaticResource BrushAccent}" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Phantasm Optimizer" FontSize="15" FontWeight="Bold" TextTrimming="CharacterEllipsis"
+                                   Foreground="{StaticResource BrushTextPrimary}" />
+                        <TextBlock Text="AJUSTES DE WINDOWS" Style="{StaticResource TextGroupLabel}" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Secciones agrupadas -->
+                <ScrollViewer Grid.Row="1" Margin="0,10,0,0" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Home"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Home}"
+                                 ToolTip="Tres pasos: analizar, revisar lo recomendado y ver el resultado">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE80F;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Inicio" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <TextBlock Text="MEJORAR" Style="{StaticResource TextGroupLabel}"
+                               Margin="12,6,0,2" />
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Guided"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Guided}"
+                                 ToolTip="Analiza tu PC (solo lectura) y aplica lo que elijas, con punto de restauración">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE945;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Mejorar mi PC" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Cleanup"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Cleanup}"
+                                 ToolTip="Vista previa y borrado de archivos temporales">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74D;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Limpieza" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <TextBlock Text="EXPLORAR Y AJUSTAR" Style="{StaticResource TextGroupLabel}"
+                               Margin="12,6,0,2" />
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Diagnostics"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Diagnostics}"
+                                 ToolTip="Qué consume tu PC y cómo está el almacenamiento (solo lectura)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9D9;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Mi PC" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Panel"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Panel}"
+                                 ToolTip="Métricas en vivo y todos los ajustes, uno por uno">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Ajustes uno por uno" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Profile"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Profile}"
+                                 ToolTip="Grupos de ajustes con una sola acción">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE902;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Configuraciones listas" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <TextBlock Text="RESULTADOS" Style="{StaticResource TextGroupLabel}"
+                               Margin="12,6,0,2" />
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="Measurement"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=Measurement}"
+                                 ToolTip="Instantáneas antes y después, con resultados reales">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9D2;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Resultados" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+                </ScrollViewer>
+
+                <!-- Pie: promesa de reversibilidad -->
+                <StackPanel Grid.Row="2">
+                    <Separator Style="{StaticResource SeparatorH}" />
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="BackupHistory"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=BackupHistory}"
+                                 ToolTip="Registro de cambios aplicados y revertidos, y cómo volver atrás">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE81C;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="Deshacer cambios" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource SidebarNavItem}" GroupName="SidebarNav"
+                                 Visibility="{Binding License, Converter={StaticResource NullToCollapsedConverter}}"
+                                 Command="{Binding NavigateToCommand}" CommandParameter="License"
+                                 IsChecked="{Binding ActiveSection, Mode=OneWay, Converter={StaticResource StringEqualsConverter}, ConverterParameter=License}"
+                                 ToolTip="ID de equipo y activación de la licencia (sin internet)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8D7;" Style="{StaticResource SidebarNavIcon}" />
+                            <TextBlock Text="{Binding License.SidebarLabel, FallbackValue=Licencia}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </RadioButton>
+                    <Grid Margin="2,4,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="&#xE7EF;" FontFamily="{StaticResource FontIcons}" FontSize="13"
+                                   Foreground="{StaticResource BrushAccent}" VerticalAlignment="Top" Margin="0,2,8,0" />
+                        <TextBlock Grid.Column="1" Style="{StaticResource TextCaption}" TextWrapping="Wrap"
+                                   Text="Los ajustes se pueden deshacer. La limpieza de archivos, no." />
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             ÁREA DE TRABAJO: migas de pan, encabezado, contenido y estado
+             ══════════════════════════════════════════════════════════════════ -->
+        <Grid Grid.Column="1" Background="{StaticResource BrushGrid}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="{StaticResource TopBarHeight}" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Barra superior: migas de pan + insignia de simulación + admin -->
+            <Border Grid.Row="0" Background="{StaticResource BrushBackground}"
+                    BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,0,0,1">
+                <Grid Margin="24,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding SectionLabel}" Style="{StaticResource TextCaption}"
+                                   FontWeight="SemiBold" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                                   Foreground="{StaticResource BrushTextPrimary}"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Modo simulación: siempre visible, con estado claro -->
+                        <TextBlock Text="Modo simulación" Style="{StaticResource TextCaption}"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <ToggleButton Style="{StaticResource ToggleSwitch}" VerticalAlignment="Center"
+                                      IsChecked="{Binding DryRunMode, Mode=TwoWay}"
+                                      ToolTip="Con el modo simulación activado, la app muestra lo que haría pero no cambia nada en Windows. El valor se guarda entre sesiones." />
+                        <TextBlock Style="{StaticResource SimulationState}"
+                                   Margin="8,0,14,0" VerticalAlignment="Center" />
+
+                        <!-- Aviso fijo cuando falta una licencia válida -->
+                        <Button Style="{StaticResource ButtonSmall}" Content="{Binding License.BannerLabel, FallbackValue=Licencia}" Margin="0,0,12,0" VerticalAlignment="Center"
+                                Command="{Binding NavigateToCommand}" CommandParameter="License"
+                                Visibility="{Binding License.NeedsAttention, Converter={StaticResource BoolToVisibilityConverter}, FallbackValue=Collapsed}"
+                                ToolTip="Sin licencia válida no se aplican cambios nuevos. La simulación y Deshacer cambios siguen disponibles." />
+
+                        <!-- Insignia de administrador: mismo lenguaje visual que los chips -->
+                        <Border Style="{StaticResource AdminBadge}" VerticalAlignment="Center"
+                                ToolTip="{Binding IsAdmin, Converter={StaticResource AdminTextConverter}}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE7EF;" FontFamily="{StaticResource FontIcons}"
+                                           FontSize="{StaticResource FontSizeChip}"
+                                           Foreground="{Binding IsAdmin, Converter={StaticResource AdminStatusConverter}}"
+                                           VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding IsAdmin, Converter={StaticResource AdminTextConverter}}"
+                                           Style="{StaticResource TextChip}"
+                                           Foreground="{Binding IsAdmin, Converter={StaticResource AdminStatusConverter}}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Encabezado: título grande + subtítulo corto -->
+            <Grid Grid.Row="1" Margin="{StaticResource MarginPage}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="// " Style="{StaticResource TextEyebrow}" Foreground="{StaticResource BrushAccent}" />
+                        <TextBlock Text="{Binding SectionEyebrow}" Style="{StaticResource TextEyebrow}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding SectionTitle}" Style="{StaticResource TextTitle}" Margin="0,2,0,0" />
+                    <TextBlock Text="{Binding SectionSubtitle}" Style="{StaticResource TextCaption}"
+                               Margin="0,4,0,0" MaxWidth="760" HorizontalAlignment="Left" TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding SectionNumber}" FontFamily="{StaticResource FontTech}" FontSize="22"
+                               Foreground="{StaticResource BrushTextSecondary}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{Binding SessionText}" Style="{StaticResource TextChip}" Margin="0,4,0,0"
+                               Foreground="{StaticResource BrushTextSecondary}" HorizontalAlignment="Right"
+                               ToolTip="Cuenta lo que el motor registró como aplicado o revertido de verdad desde que abriste la app. Las simulaciones no cuentan." />
+                </StackPanel>
+            </Grid>
+
+            <!-- Contenido de la sección activa -->
+            <ScrollViewer x:Name="ContentScroll" Grid.Row="2" HorizontalScrollBarVisibility="Disabled"
+                          VerticalScrollBarVisibility="Auto"
+                          Background="Transparent"
+                          Padding="24,0,24,8">
+                <views:CachedViewHost x:Name="ViewHost" ViewModel="{Binding CurrentView}" />
+            </ScrollViewer>
+
+            <!-- Línea divisoria de marca (cian a magenta) sobre el pie -->
+            <Rectangle Grid.Row="3" Height="1" VerticalAlignment="Top" Fill="{StaticResource BrushBrandFade}" Panel.ZIndex="2" IsHitTestVisible="False" />
+
+            <!-- Barra inferior: estado real, acciones y firma -->
+            <Border Grid.Row="3" Background="{StaticResource BrushSurface}"
+                    BorderBrush="Transparent" BorderThickness="0,1,0,0"
+                    Padding="24,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <DockPanel Grid.Column="0" LastChildFill="True" VerticalAlignment="Center">
+                        <!-- Indicador mientras Windows crea el punto de restauración (segundo plano) -->
+                        <ProgressBar DockPanel.Dock="Left" Style="{StaticResource MetricProgressBar}" IsIndeterminate="True"
+                                     Width="120" VerticalAlignment="Center" Margin="0,0,10,0"
+                                     Visibility="{Binding IsCreatingRestorePoint, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        <TextBlock Text="{Binding StatusMessage, TargetNullValue=''}"
+                                   ToolTip="{Binding StatusMessage}"
+                                   Style="{StaticResource TextCaption}"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap" MaxHeight="72" />
+                    </DockPanel>
+
+                    <TextBlock Grid.Column="1" Text="Phantasm Optimizer · v1.0.0 · Carlos Daniel Atencia"
+                               Style="{StaticResource TextGroupLabel}"
+                               VerticalAlignment="Center" Margin="12,0,12,0" />
+
+                    <Button Grid.Column="2"
+                            Content="Reiniciar como administrador"
+                            Command="{Binding RestartAsAdminCommand}"
+                            Style="{StaticResource ButtonSmall}"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                            Margin="0,0,8,0"
+                            ToolTip="Cierra y reabre la app con permisos elevados (UAC). Necesario para ajustes del sistema." />
+
+                    <Button Grid.Column="3"
+                            Content="Crear punto de restauración"
+                            Command="{Binding CreateRestorePointCommand}"
+                            Style="{StaticResource ButtonSmall}"
+                            ToolTip="Crea un punto de restauración de Windows antes de aplicar cambios. Protege la configuración del sistema, NO recupera archivos borrados." />
+                </Grid>
+            </Border>
+        </Grid>
+        <views:ToastHost Grid.Column="1" Manager="{Binding Toasts}" HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom" Margin="0,0,24,64" />
+        <views:CommandPalette x:Name="Palette" Grid.ColumnSpan="2" Panel.ZIndex="50" />
+    </Grid>
+</Window>

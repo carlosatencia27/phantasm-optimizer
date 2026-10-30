@@ -1,0 +1,63 @@
+<UserControl x:Class="PC_Optimizer.Views.ToastHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="False" IsHitTestVisible="True">
+    <!-- Avisos flotantes: entrada y salida de ~250 ms sobre opacidad y desplazamiento (DurationToast;
+         0 si Windows tiene las animaciones desactivadas). Los errores no se cierran solos. -->
+    <ItemsControl x:Name="List" Focusable="False" Width="340">
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Border x:Name="Card" Margin="0,8,0,0" Padding="14,10,10,10" Opacity="0"
+                        Background="{StaticResource BrushSurfaceElevated}"
+                        BorderBrush="{StaticResource BrushBorder}" BorderThickness="1" CornerRadius="4"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <TranslateTransform x:Name="Slide" X="24" />
+                    </Border.RenderTransform>
+                    <Border.Triggers>
+                        <EventTrigger RoutedEvent="Border.Loaded">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="Card" Storyboard.TargetProperty="Opacity" To="1" Duration="{StaticResource DurationToast}" />
+                                    <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="0" Duration="{StaticResource DurationToast}" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Border.Triggers>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="Bar" Grid.Column="0" CornerRadius="2" Background="{StaticResource BrushAccent}" Margin="0,0,10,0" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Message}" Style="{StaticResource TextBody}" TextWrapping="Wrap" />
+                            <Button Content="Deshacer" Command="{Binding UndoCommand}" Style="{StaticResource ButtonSmall}"
+                                    HorizontalAlignment="Left" Margin="0,8,0,0"
+                                    Visibility="{Binding HasUndo, Converter={StaticResource BoolToVisibilityConverter}}" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Content="✕" Command="{Binding CloseCommand}" Style="{StaticResource ButtonSmall}"
+                                VerticalAlignment="Top" Padding="8,2" ToolTip="Cerrar" AutomationProperties.Name="Cerrar aviso" />
+                    </Grid>
+                </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsError}" Value="True">
+                            <Setter TargetName="Bar" Property="Background" Value="{StaticResource BrushDanger}" />
+                            <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource BrushDanger}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsClosing}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="Card" Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource DurationToast}" />
+                                        <DoubleAnimation Storyboard.TargetName="Slide" Storyboard.TargetProperty="X" To="24" Duration="{StaticResource DurationToast}" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

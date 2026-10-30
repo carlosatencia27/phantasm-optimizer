@@ -1,0 +1,295 @@
+<local:BasePage x:Class="PC_Optimizer.Views.DiagnosticsView"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:local="clr-namespace:PC_Optimizer.Views"
+                xmlns:vms="clr-namespace:PC_Optimizer.ViewModels"
+                mc:Ignorable="d"
+                d:DesignHeight="450" d:DesignWidth="800"
+                d:DataContext="{d:DesignInstance Type=vms:DiagnosticsViewModel, IsDesignTimeCreatable=False}">
+    <Grid Margin="{StaticResource MarginPageTop}">
+        <ScrollViewer Style="{StaticResource SlimScrollViewer}">
+            <StackPanel>
+                <!-- Mensaje de estado: solo aparece cuando hay texto -->
+                <Border Style="{StaticResource StatusBanner}" Margin="0,0,0,16"
+                        Visibility="{Binding StatusMessage, Converter={StaticResource NullToCollapsedConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="▸" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                                   VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource TextBody}"
+                                   TextWrapping="Wrap" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════════════════════
+                     QUÉ CONSUME TU PC (solo lectura, sin cerrar procesos)
+                     ══════════════════════════════════════════════════════════════ -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Qué consume tu PC" Style="{StaticResource TextCardTitle}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Border Style="{StaticResource ChipGeneric}" Margin="{StaticResource MarginChipItem}">
+                                    <TextBlock Text="Solo lectura" Style="{StaticResource TextChip}"
+                                               Foreground="{StaticResource BrushTextSecondary}" />
+                                </Border>
+                                <TextBlock Text="{Binding UpdatedAtText}" Style="{StaticResource TextCaption}"
+                                           VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="24" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Más RAM -->
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="5 programas con más RAM" Style="{StaticResource TextGroupLabel}" />
+                                <ItemsControl ItemsSource="{Binding TopRam}" Margin="0,4,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                           Style="{StaticResource TextBody}"
+                                                           TextTrimming="CharacterEllipsis" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="1" Text="{Binding RamText}"
+                                                           Style="{StaticResource TextBody}"
+                                                           Foreground="{StaticResource BrushTextSecondary}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="No disponible" Style="{StaticResource TextCaption}"
+                                           Visibility="{Binding HasProcessData, Converter={StaticResource InverseBoolToCollapsedConverter}}" />
+                            </StackPanel>
+
+                            <!-- Más CPU -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="5 programas con más CPU" Style="{StaticResource TextGroupLabel}" />
+                                <ItemsControl ItemsSource="{Binding TopCpu}" Margin="0,4,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,3">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                           Style="{StaticResource TextBody}"
+                                                           TextTrimming="CharacterEllipsis" Margin="0,0,8,0" />
+                                                <TextBlock Grid.Column="1" Text="{Binding CpuText}"
+                                                           Style="{StaticResource TextBody}"
+                                                           Foreground="{StaticResource BrushTextSecondary}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
+
+                        <Separator Style="{StaticResource SeparatorH}" Margin="0,12" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Text="{Binding StartupProgramsText}" Style="{StaticResource TextBody}" />
+                                <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                           Text="Los programas de inicio se activan o desactivan en «Ajustes uno por uno», con su estado real y su reversión." />
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="Ir a Ajustes uno por uno"
+                                    Command="{Binding OpenStartupSectionCommand}"
+                                    Style="{StaticResource ButtonGhost}"
+                                    VerticalAlignment="Center" />
+                        </Grid>
+
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,12,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="La CPU se mide durante 1 segundo y se divide entre los núcleos del equipo. Los programas se agrupan por nombre y se excluye el proceso inactivo del sistema. Esta pantalla no cierra procesos ni cambia nada." />
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════════════════════
+                     ALMACENAMIENTO (solo lectura)
+                     ══════════════════════════════════════════════════════════════ -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Almacenamiento" Style="{StaticResource TextCardTitle}" />
+                        <TextBlock Text="Unidades fijas, tipo de disco y espacio real." Style="{StaticResource TextCaption}"
+                                   Margin="0,4,0,0" />
+
+                        <ItemsControl ItemsSource="{Binding Volumes}" Margin="0,12,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource TextBody}"
+                                                   FontWeight="SemiBold" VerticalAlignment="Center" MinWidth="46" />
+
+                                        <StackPanel Grid.Column="1" Margin="8,0,16,0" VerticalAlignment="Center">
+                                            <WrapPanel Style="{StaticResource ChipRow}">
+                                                <Border Style="{StaticResource ChipGeneric}" Margin="{StaticResource MarginChipItem}">
+                                                    <TextBlock Text="{Binding MediaText}" Style="{StaticResource TextChip}"
+                                                               Foreground="{StaticResource BrushTextSecondary}" />
+                                                </Border>
+                                                <TextBlock Text="{Binding SpaceText}" Style="{StaticResource TextCaption}"
+                                                           VerticalAlignment="Center" />
+                                            </WrapPanel>
+                                            <ProgressBar Value="{Binding FreePercent, Mode=OneWay}" Maximum="100"
+                                                         Style="{StaticResource MetricProgressBar}"
+                                                         Foreground="{StaticResource BrushAccent}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="No se pudieron leer unidades fijas." Style="{StaticResource TextCaption}"
+                                   Visibility="{Binding HasVolumes, Converter={StaticResource InverseBoolToCollapsedConverter}}" />
+
+                        <Separator Style="{StaticResource SeparatorH}" Margin="0,4,0,12" />
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                                <TextBlock Grid.Column="0" Text="{Binding TrimText}" Style="{StaticResource TextBody}"
+                                           TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding TrimDetail}" Style="{StaticResource TextCaption}"
+                                           TextWrapping="Wrap" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="{Binding StorageNote}" Style="{StaticResource TextCaption}" TextWrapping="Wrap"
+                                   Foreground="{StaticResource BrushTextSecondary}" Margin="0,8,0,0" />
+
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="TRIM: avisa al disco SSD de qué espacio ya no se usa. Si aparece desactivado en un SSD, esta pantalla solo lo informa: no lo cambia. Los discos mecánicos no usan TRIM y no se muestran consejos sobre él." />
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════════════════════
+                     ARRANQUE DE WINDOWS (solo lectura)
+                     ══════════════════════════════════════════════════════════════ -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Arranque de Windows" Style="{StaticResource TextCardTitle}" />
+                        <TextBlock Text="Duración de los últimos arranques que Windows registró (evento 100). Solo lectura."
+                                   Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+
+                        <ItemsControl ItemsSource="{Binding Boots}" Margin="0,12,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding WhenText}" Style="{StaticResource TextBody}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding SecondsText}" Style="{StaticResource TextCaption}"
+                                                   FontWeight="SemiBold" Margin="12,0,0,0" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Text="{Binding BootNote}" Style="{StaticResource TextCaption}" TextWrapping="Wrap"
+                                   Foreground="{StaticResource BrushTextSecondary}" Margin="0,4,0,0" />
+
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="Muestra solo lo medido por Windows: la app no promete mejoras de arranque ni borra eventos del registro." />
+                    </StackPanel>
+                </Border>
+
+                <!-- ══════════════════════════════════════════════════════════════
+                     MEMORIA Y RED (solo lectura)
+                     ══════════════════════════════════════════════════════════════ -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Velocidad de la RAM" Style="{StaticResource TextCardTitle}" />
+                        <TextBlock Text="Compara la velocidad a la que Windows dice que corre la RAM con la que declara cada módulo. Solo lectura."
+                                   Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding MemorySpeedHeadline}" Style="{StaticResource TextBody}" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{Binding MemorySpeedDetail}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <ItemsControl ItemsSource="{Binding MemoryModules}" Margin="0,12,0,0"
+                                      Visibility="{Binding HasMemoryModules, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="Si un dato no se puede leer, se indica «no se puede determinar»: la app no adivina. No cambia la BIOS ni promete más FPS." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Canales de memoria (dual channel)" Style="{StaticResource TextCardTitle}" />
+                        <TextBlock Text="Muestra lo que Windows informa de los módulos y las ranuras. Solo lectura."
+                                   Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding ChannelHeadline}" Style="{StaticResource TextBody}" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{Binding ChannelDetail}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="Windows no informa el modo de canales, por eso la app nunca afirma que lo estés usando o no." />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="Tipo de conexión de red" Style="{StaticResource TextCardTitle}" />
+                        <TextBlock Text="Detecta si la conexión activa es por cable (Ethernet) o por Wi-Fi. Solo lectura."
+                                   Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <TextBlock Text="{Binding NetworkHeadline}" Style="{StaticResource TextBody}" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{Binding NetworkDetail}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                        <ItemsControl ItemsSource="{Binding NetworkAdapters}" Margin="0,12,0,0"
+                                      Visibility="{Binding HasNetworkAdapters, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,0,0,6" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Style="{StaticResource TextCaption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="Esta pantalla no cambia adaptadores ni configuración de red y no promete mejoras de velocidad." />
+                    </StackPanel>
+                </Border>
+
+                <Button Content="Actualizar ahora" Command="{Binding RefreshCommand}" Style="{StaticResource ButtonGhost}"
+                        HorizontalAlignment="Left" Margin="0,0,0,8" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</local:BasePage>

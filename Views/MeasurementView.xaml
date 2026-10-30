@@ -1,0 +1,186 @@
+<local:BasePage x:Class="PC_Optimizer.Views.MeasurementView"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:local="clr-namespace:PC_Optimizer.Views"
+                xmlns:vms="clr-namespace:PC_Optimizer.ViewModels"
+                mc:Ignorable="d"
+                d:DesignHeight="450" d:DesignWidth="800"
+                d:DataContext="{d:DesignInstance Type=vms:MeasurementViewModel, IsDesignTimeCreatable=False}">
+    <Grid Margin="{StaticResource MarginPageTop}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Acciones de medición -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="Toma una instantánea antes y otra después de aplicar ajustes."
+                           Style="{StaticResource TextCaption}" Margin="0,0,0,12" />
+                <WrapPanel>
+                    <Button Content="Tomar instantánea antes"
+                            Command="{Binding TakeBeforeCommand}"
+                            Style="{StaticResource ButtonPrimary}"
+                            Margin="0,0,8,8"
+                            IsEnabled="{Binding IsMeasuring, Converter={StaticResource InverseBoolConverter}}" />
+                    <Button Content="Tomar instantánea después"
+                            Command="{Binding TakeAfterCommand}"
+                            Style="{StaticResource ButtonGhost}"
+                            Margin="0,0,8,8"
+                            IsEnabled="{Binding IsMeasuring, Converter={StaticResource InverseBoolConverter}}" />
+                    <Button Content="Generar reporte comparativo"
+                            Command="{Binding CompareCommand}"
+                            Style="{StaticResource ButtonGhost}"
+                            Margin="0,0,8,8" />
+                </WrapPanel>
+                <DockPanel Margin="0,4,0,0" LastChildFill="True"
+                           Visibility="{Binding IsMeasuring, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ProgressBar DockPanel.Dock="Left" Style="{StaticResource MetricProgressBar}" IsIndeterminate="True"
+                                 Width="140" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Text="Midiendo en segundo plano… la ventana sigue respondiendo."
+                               Style="{StaticResource TextCaption}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                </DockPanel>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SlimScrollViewer}">
+            <StackPanel>
+                <!-- La barra de mensajes desaparece por completo cuando no hay texto -->
+                <Border Style="{StaticResource StatusBanner}" Margin="0,0,0,16"
+                        Visibility="{Binding StatusMessage, Converter={StaticResource NullToCollapsedConverter}}">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock DockPanel.Dock="Left" Text="▸" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                                   VerticalAlignment="Top" Margin="0,1,8,0" />
+                        <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource TextBody}"
+                                   VerticalAlignment="Center" TextWrapping="Wrap" />
+                    </DockPanel>
+                </Border>
+
+                <!-- Tabla antes / después -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="📊" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                            <TextBlock Text="Comparativa antes y después" Style="{StaticResource TextCardTitle}" />
+                        </StackPanel>
+
+
+                        <Grid>
+                            <ItemsControl x:Name="ComparisonTable" ItemsSource="{Binding ComparisonRows}"
+                                          ItemTemplate="{StaticResource MetricComparisonRowTemplate}" />
+
+                            <local:StatePanel Kind="Empty" Title="Todavía no hay nada que comparar"
+        Message="Toma una instantánea «antes», aplica los ajustes que quieras y toma la instantánea «después». Después pulsa «Generar reporte comparativo»."
+        Visibility="{Binding ElementName=ComparisonTable, Path=HasItems, Converter={StaticResource InverseBoolToCollapsedConverter}}" />
+                        </Grid>
+
+                        <TextBlock Style="{StaticResource TextCaption}" Margin="0,12,0,0" TextWrapping="Wrap"
+                                   Text="{Binding MarginsDescription}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Instantáneas tomadas -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Instantáneas tomadas" Style="{StaticResource TextCardTitle}" Margin="0,0,0,12" />
+
+                        <Grid>
+                            <ItemsControl x:Name="SnapshotList" ItemsSource="{Binding Snapshots}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource HistoryListItem}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                                    <TextBlock Text="{Binding Label}" Style="{StaticResource TextBody}"
+                                                               FontWeight="SemiBold" />
+                                                    <TextBlock Text="{Binding Timestamp}" Style="{StaticResource TextCaption}"
+                                                               Margin="0,4,0,0" />
+                                                </StackPanel>
+                                                <WrapPanel Grid.Column="1">
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding CpuUsage, StringFormat={}CPU: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding RamUsage, StringFormat={}RAM: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding ProcessCount, StringFormat={}Procesos: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding DnsResolution, StringFormat={}DNS: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding Ping, StringFormat={}Ping: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding FreeSpace, StringFormat={}Libre en C: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding Hiberfil, StringFormat={}hiberfil.sys: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding StartupPrograms, StringFormat={}Programas de inicio: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                    <Border Style="{StaticResource ChipGeneric}">
+                                                        <TextBlock Text="{Binding LastBoot, StringFormat={}Último arranque: {0}}"
+                                                                   Style="{StaticResource TextChip}"
+                                                                   Foreground="{StaticResource BrushTextSecondary}" />
+                                                    </Border>
+                                                </WrapPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <local:StatePanel Kind="Empty" Title="Sin instantáneas"
+        Message="Aquí se guardarán las mediciones que tomes. Cada instantánea es una foto de tu PC en ese momento: no cambia nada por sí sola."
+        Visibility="{Binding ElementName=SnapshotList, Path=HasItems, Converter={StaticResource InverseBoolToCollapsedConverter}}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Reporte y nota de honestidad -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Resumen del reporte" Style="{StaticResource TextCardTitle}" Margin="0,0,0,8" />
+                        <TextBlock Text="{Binding LastReport.Summary, FallbackValue='Toma dos instantáneas y genera un reporte.'}"
+                                   Style="{StaticResource TextBody}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatusBanner}" Margin="0,0,0,16">
+                    <DockPanel LastChildFill="True">
+                        <TextBlock DockPanel.Dock="Left" Text="✓" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushSuccess}"
+                                   VerticalAlignment="Top" Margin="0,1,8,0" />
+                        <TextBlock Style="{StaticResource TextBody}" Foreground="{StaticResource BrushTextSecondary}" TextWrapping="Wrap"
+                                   Text="Este reporte muestra diferencias reales y medibles. Nunca se inventan ni se redondean hacia arriba los resultados." />
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</local:BasePage>

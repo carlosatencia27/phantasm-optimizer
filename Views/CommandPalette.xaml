@@ -1,0 +1,31 @@
+<UserControl x:Class="PC_Optimizer.Views.CommandPalette"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Visibility="Collapsed" Focusable="False">
+    <!-- Paleta de comandos (Ctrl+K): busca pantallas y ajustes por nombre y SOLO navega. -->
+    <Grid>
+        <Border x:Name="Backdrop" Background="#99090B10" MouseDown="OnBackdropMouseDown" />
+        <Border Width="520" VerticalAlignment="Top" Margin="0,70,0,0" Padding="12"
+                Background="{StaticResource BrushSurfaceElevated}" BorderBrush="{StaticResource BrushBrandGradient}"
+                BorderThickness="1" CornerRadius="4">
+            <StackPanel>
+                <TextBlock Text="BUSCAR PANTALLA O AJUSTE" Style="{StaticResource TextEyebrow}" Margin="2,0,0,6" />
+                <TextBox x:Name="Box" Style="{StaticResource InputBox}" TextChanged="OnTextChanged"
+                         AutomationProperties.Name="Buscar pantalla o ajuste" />
+                <ListBox x:Name="Results" Margin="0,8,0,0" MaxHeight="300" Background="Transparent" BorderThickness="0"
+                         MouseDoubleClick="OnResultDoubleClick" Focusable="False">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="4,3">
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource TextBody}" />
+                                <TextBlock Text="{Binding Subtitle}" Style="{StaticResource TextCaption}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <TextBlock Text="↑ ↓ para elegir · Enter para ir · Esc para cerrar. Solo navega: no cambia nada."
+                           Style="{StaticResource TextCaption}" Margin="2,8,0,0" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

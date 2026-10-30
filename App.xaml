@@ -1,0 +1,57 @@
+<Application x:Class="PC_Optimizer.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PC_Optimizer"
+             xmlns:converters="clr-namespace:PC_Optimizer.Converters"
+             xmlns:vms="clr-namespace:PC_Optimizer.ViewModels"
+             xmlns:views="clr-namespace:PC_Optimizer.Views">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Convertidores registrados globalmente -->
+            <converters:AdminStatusConverter x:Key="AdminStatusConverter" />
+            <converters:AdminTextConverter x:Key="AdminTextConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:ProgressWidthConverter x:Key="ProgressWidthConverter" />
+            <converters:PercentToColorConverter x:Key="PercentToColorConverter" />
+            <converters:NullToCollapsedConverter x:Key="NullToCollapsedConverter" />
+            <converters:RiskColorConverter x:Key="RiskColorConverter" />
+            <converters:StringEqualsConverter x:Key="StringEqualsConverter" />
+            <converters:InverseBoolToCollapsedConverter x:Key="InverseBoolToCollapsedConverter" />
+
+            <!-- DataTemplates: mapean ViewModel → Vista -->
+            <DataTemplate DataType="{x:Type vms:HomeViewModel}">
+                <views:HomeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:PanelViewModel}">
+                <views:PanelView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:DiagnosticsViewModel}">
+                <views:DiagnosticsView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:GuidedOptimizationViewModel}">
+                <views:GuidedOptimizationView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:CleanupViewModel}">
+                <views:CleanupView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:MeasurementViewModel}">
+                <views:MeasurementView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:ProfileViewModel}">
+                <views:ProfileView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:BackupHistoryViewModel}">
+                <views:BackupHistoryView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:LicenseViewModel}">
+                <views:LicenseView />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,71 @@
+## .NET build output
+[Bb]in/
+[Oo]bj/
+.vs/
+
+## IDE files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Test results and coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.coverage
+*.coveragexml
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+## Publish output
+publish/
+**/publish/
+
+## Instalador compilado (se compila con Inno Setup, nunca se versiona)
+installer/
+
+## Excluded project content
+carpeta de optimizaciones/
+
+## Maqueta web de referencia (solo lectura, no forma parte del proyecto)
+referencia-diseno-lovable/
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
+
+# Material de investigacion no confiable (no subir ni empaquetar)
+_investigacion/
+
+# Skills copiados de dotnet/skills (terceros; no van al repositorio)
+.claude/skills/csharp-expert/
+.claude/skills/csharp-refactoring/
+.claude/skills/msbuild/
+.claude/skills/setup-local-sdk/
+
+# Capturas de revisión visual (se regeneran con PCOPT_SHOTS)
+docs/capturas/
+
+## Binarios de distribución (se generan con dotnet publish + Inno Setup; no se versionan)
+*.zip
+installer/
+publish-installer/
+publish-work/
+
+## Claves y licencias: NUNCA al repositorio
+*.lic
+*.p256
+*.pfx
+*.snk
+*.pem
+PhantasmKeys/
+PhantasmLicenseTool/
+license-state
+
+## Archivos de trabajo con Claude: nunca en GitHub
+.claude/
+CLAUDE.md
+AGENTS.md

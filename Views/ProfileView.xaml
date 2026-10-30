@@ -1,0 +1,175 @@
+<local:BasePage x:Class="PC_Optimizer.Views.ProfileView"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:local="clr-namespace:PC_Optimizer.Views"
+                xmlns:vms="clr-namespace:PC_Optimizer.ViewModels"
+                mc:Ignorable="d"
+                d:DesignHeight="450" d:DesignWidth="800"
+                d:DataContext="{d:DesignInstance Type=vms:ProfileViewModel, IsDesignTimeCreatable=False}">
+    <Grid Margin="{StaticResource MarginPageTop}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <Border Style="{StaticResource SimulationBanner}" Margin="0,0,0,16"
+                    Visibility="{Binding DryRunMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#xE9CE;" FontFamily="{StaticResource FontIcons}"
+                               FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushWarning}"
+                               VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Text="Solo simulado: el perfil se recorrerá sin cambiar nada en Windows."
+                               Style="{StaticResource TextCaption}"
+                               Foreground="{StaticResource BrushWarning}" VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- La barra de mensajes desaparece por completo cuando no hay texto -->
+            <Border Style="{StaticResource StatusBanner}" Margin="0,0,0,16"
+                    Visibility="{Binding StatusMessage, Converter={StaticResource NullToCollapsedConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="▸" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                               VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource TextBody}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource SlimScrollViewer}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Perfil: Bajos recursos -->
+                    <Border Grid.Column="0" Style="{StaticResource CardPanel}" Margin="0,0,8,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="&#xE8BE;" FontFamily="{StaticResource FontIcons}"
+                                           FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Bajos recursos" Style="{StaticResource TextSubtitle}" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Margin="0,8,0,0" Style="{StaticResource TextCaption}"
+                                       TextWrapping="Wrap"
+                                       Text="Desactiva la captura de Game Bar y las transparencias de Windows. Alivia algo de GPU en equipos modestos; no garantiza más FPS." />
+
+                            <TextBlock Grid.Row="2" Text="AJUSTES QUE ACTIVA" Style="{StaticResource TextEyebrow}"
+                                       Margin="0,16,0,8" />
+
+                            <ItemsControl Grid.Row="3" ItemsSource="{Binding LowResourcesSettings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,3">
+                                            <TextBlock Text="●" FontSize="{StaticResource FontSizeIconSm}" Foreground="{StaticResource BrushAccent}"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <TextBlock Text="{Binding}" Style="{StaticResource TextBody}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button Content="Aplicar"
+                                        Command="{Binding ApplyLowResourcesCommand}"
+                                        Style="{StaticResource ButtonPrimary}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Perfil: Gaming -->
+                    <Border Grid.Column="1" Style="{StaticResource CardPanel}" Margin="8,0,0,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Text="&#xE7FC;" FontFamily="{StaticResource FontIcons}"
+                                           FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushAccent}"
+                                           VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Gaming" Style="{StaticResource TextSubtitle}" />
+                            </StackPanel>
+
+                            <TextBlock Grid.Row="1" Margin="0,8,0,0" Style="{StaticResource TextCaption}"
+                                       TextWrapping="Wrap"
+                                       Text="Activa el Modo de juego de Windows y las optimizaciones para juegos en ventana (SwapEffectUpgradeEnable). En muchos equipos la diferencia no es medible." />
+
+                            <TextBlock Grid.Row="2" Text="AJUSTES QUE ACTIVA" Style="{StaticResource TextEyebrow}"
+                                       Margin="0,16,0,8" />
+
+                            <ItemsControl Grid.Row="3" ItemsSource="{Binding GamingSettings}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,3">
+                                            <TextBlock Text="●" FontSize="{StaticResource FontSizeIconSm}" Foreground="{StaticResource BrushAccent}"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0" />
+                                            <TextBlock Text="{Binding}" Style="{StaticResource TextBody}"
+                                                       VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,16,0,0">
+                                <Button Content="Aplicar"
+                                        Command="{Binding ApplyGamingCommand}"
+                                        Style="{StaticResource ButtonPrimary}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Revertir todo -->
+                <Border Style="{StaticResource CardPanel}" Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Revertir todos los cambios de perfil aplicados"
+                                       Style="{StaticResource TextBody}" FontWeight="SemiBold" />
+                            <TextBlock Style="{StaticResource TextCaption}" Margin="0,4,0,0"
+                                       Text="Devuelve cada ajuste a su valor original guardado. La limpieza de archivos temporales no entra aquí: no se puede deshacer." />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="↺ Revertir todo"
+                                Command="{Binding RevertProfileCommand}"
+                                Style="{StaticResource ButtonGhost}"
+                                VerticalAlignment="Center" Margin="12,0,0,0" />
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource StatusBanner}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="ⓘ" FontSize="{StaticResource FontSizeIcon}" Foreground="{StaticResource BrushInfo}"
+                                   VerticalAlignment="Top" Margin="0,1,8,0" />
+                        <TextBlock Style="{StaticResource TextBody}" Foreground="{StaticResource BrushTextSecondary}"
+                                   Text="Los perfiles no incluyen HAGS ni cambios de plan de energía: dependen del hardware. Si algún ajuste requiere reinicio, se avisa antes de aplicarlo." />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</local:BasePage>

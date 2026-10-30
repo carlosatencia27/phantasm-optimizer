@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>PC_Optimizer</RootNamespace>
+    <!-- Nombre visible. El nombre del archivo (PC Optimizer.exe), el espacio de nombres y las rutas de
+         datos del usuario NO cambian a propósito: así siguen funcionando los respaldos, el historial y
+         el inicio con Windows de quien ya tenía la app. -->
+    <Product>Phantasm Optimizer</Product>
+    <AssemblyTitle>Phantasm Optimizer</AssemblyTitle>
+    <Description>Phantasm Optimizer: ajustes reversibles de Windows con medición antes y después.</Description>
+    <Company>Carlos Daniel Atencia</Company>
+    <Authors>Carlos Daniel Atencia</Authors>
+    <Copyright>© 2026 Carlos Daniel Atencia</Copyright>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <DefaultItemExcludes>$(DefaultItemExcludes);Tests\**;Tools\MakeIco.cs;referencia-diseno-lovable\**</DefaultItemExcludes>
+    <ApplicationIcon>Resources\PC_Optimizer.ico</ApplicationIcon>
+    <PublishTrimmed>false</PublishTrimmed>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <!-- Compilación anticipada (AOT parcial) para win-x64: recorta el trabajo de JIT al arrancar. -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <!-- Solo se publican los recursos de idioma de la app (español), inglés y el neutro: las 30+
+         carpetas de idiomas del runtime no se usan y engordan la publicación. -->
+    <SatelliteResourceLanguages>es;en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <Resource Include="Resources\PC_Optimizer.ico" />
+  </ItemGroup>
+
+  <!-- Excluir herramienta de generación de ícono del build principal -->
+  <ItemGroup>
+    <Compile Remove="Tools\MakeIco.cs" />
+  </ItemGroup>
+
+  <!-- Ofuscación opcional (solo con -p:Ofuscar=true -p:ObfuscarExe=<ruta a obfuscar.console.exe>).
+       Obfuscar actúa SOLO sobre lo marcado con [Obfuscation(Exclude = false)] (código de licencias);
+       Views, ViewModels, Models y todo lo que usa bindings XAML o reflexión queda intacto.
+       Se ejecuta tras compilar y antes de empaquetar, así portable e instalador quedan igual. -->
+  <Target Name="OfuscarLicencias" AfterTargets="CoreCompile"
+          Condition="'$(Ofuscar)' == 'true' And !$(MSBuildProjectName.Contains('wpftmp'))">
+    <PropertyGroup>
+      <ObfWork>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(IntermediateOutputPath)ofuscar\'))</ObfWork>
+      <ObfConfig><![CDATA[<?xml version='1.0'?>
+<Obfuscator>
+  <Var name="InPath" value="$(ObfWork)in" />
+  <Var name="OutPath" value="$(ObfWork)out" />
+  <Var name="KeepPublicApi" value="false" />
+  <Var name="HidePrivateApi" value="true" />
+  <Var name="RenameProperties" value="true" />
+  <Var name="RenameFields" value="true" />
+  <Var name="RenameEvents" value="true" />
+  <Var name="HideStrings" value="true" />
+  <Var name="UseUnicodeNames" value="false" />
+  <Var name="ReuseNames" value="false" />
+  <Var name="MarkedOnly" value="true" />
+  <Module file="$(ObfWork)in\$(TargetFileName)" />
+</Obfuscator>]]></ObfConfig>
+    </PropertyGroup>
+    <Error Condition="'$(ObfuscarExe)' == '' Or !Exists('$(ObfuscarExe)')" Text="Ofuscar=true requiere -p:ObfuscarExe=&lt;ruta a obfuscar.console.exe&gt;." />
+    <RemoveDir Directories="$(ObfWork)" />
+    <MakeDir Directories="$(ObfWork)in;$(ObfWork)out" />
+    <Copy SourceFiles="@(IntermediateAssembly)" DestinationFolder="$(ObfWork)in" />
+    <Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(ObfWork)in" SkipUnchangedFiles="true" />
+    <WriteLinesToFile File="$(ObfWork)obfuscar.xml" Lines="$(ObfConfig)" Overwrite="true" />
+    <Exec Command="&quot;$(ObfuscarExe)&quot; &quot;$(ObfWork)obfuscar.xml&quot;" />
+    <Copy SourceFiles="$(ObfWork)out\$(TargetFileName)" DestinationFiles="@(IntermediateAssembly)" />
+  </Target>
+
+</Project>
